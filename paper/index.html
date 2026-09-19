@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Content Opportunity Scoring — FlyRank ML Internship</title>
+</head>
+
+<body>
+
+  <h1>Content Opportunity Scoring for Review Prioritization</h1>
+
+  <p>
+    A reproducible analysis for ranking pages that may warrant content review
+    using observable search, traffic, and freshness signals.
+  </p>
+
+  <hr>
+
+  <h2>1. Abstract</h2>
+
+  <p>
+    This research asks whether observable page-level signals can be used to
+    rank pages for content review. The analysis uses February 2026 page-level
+    search and content information from the FlyRank internship warehouse and
+    evaluates an interpretable Logistic Regression model against a transparent
+    rule-based baseline. The observed March outcome proxy is whether a page
+    recorded zero GSC clicks during the evaluation window. On the held-out
+    evaluation set, the model and baseline are compared using Precision@50
+    and Average Precision. The resulting ranking is intended as decision
+    support for prioritizing human review, not as an automatic content
+    decision or a causal claim about search performance.
+  </p>
+
+  <h2>2. Introduction / Problem Statement</h2>
+
+  <p>
+    Content teams may have many pages that could potentially require review,
+    while available editorial resources are limited. A repeatable ranking
+    approach can help organize which pages should be inspected first.
+  </p>
+
+  <p>
+    The research question is: Can observable page-level search, traffic,
+    engagement, freshness, and performance signals be used to rank pages for
+    review so that limited content resources can be focused on the most
+    relevant opportunities first?
+  </p>
+
+  <h2>3. Data</h2>
+
+  <p><strong>Dataset:</strong> FlyRank internship warehouse, release
+    <code>v20260703</code>.</p>
+
+  <p>The analysis uses:</p>
+
+  <ul>
+    <li><code>fact_content_daily_performance</code></li>
+    <li><code>dim_content</code></li>
+  </ul>
+
+  <p>
+    February 2026 provides the decision-time features. March 2026 provides
+    the observed evaluation outcome. June 2026 is treated as a sealed
+    warehouse month and is not used for model development.
+  </p>
+
+  <p>
+    The model uses GSC impressions, GSC clicks, and content age in days.
+    Future information, label-derived variables, product-generated priority
+    or health fields, client information, private queries, credentials, and
+    raw exports are excluded.
+  </p>
+
+  <h2>4. Methodology</h2>
+
+  <p>
+    Logistic Regression was selected because the objective is to create an
+    interpretable ranking of pages for human review.
+  </p>
+
+  <p>
+    The observed March outcome proxy, <code>went_dark</code>, equals 1 when
+    observed March GSC clicks are zero and 0 otherwise. This is an observed
+    outcome proxy and is not treated as ground truth for successful content
+    refresh.
+  </p>
+
+  <p>
+    The Week-4 baseline uses content age and February GSC impressions to
+    produce a transparent score from 0 to 4.
+  </p>
+
+  <p>
+    Validation uses an 80/20 grouped train-test split by
+    <code>client_hash_id</code>, with random state 42. Both methods are
+    evaluated on the same held-out population. Precision@50 is the primary
+    ranking metric and Average Precision is also reported.
+  </p>
+
+  <h2>5. Results</h2>
+
+  <p>
+    The Logistic Regression model is compared with the Week-4 transparent
+    baseline on the same held-out evaluation population.
+  </p>
+
+  <!-- RESULTS TABLE WILL GO HERE -->
+
+  <h2>6. Limitations & Honest Framing</h2>
+
+  <p>
+    The analysis is observational and does not establish that refreshing a
+    page will cause improved search performance. The March zero-click outcome
+    is only a proxy and does not measure whether a refresh would succeed.
+  </p>
+
+  <p>
+    Low impressions or clicks may have legitimate explanations such as low
+    search demand, seasonality, or intentional targeting. The model therefore
+    provides a review signal rather than an automatic action.
+  </p>
+
+  <p>
+    The model uses only three verified features, and results are based on one
+    held-out evaluation split. Performance may differ across other clients,
+    periods, or future data.
+  </p>
+
+  <h2>7. Ranked Recommendations</h2>
+
+  <p>
+    The model ranking is translated into a human-review playbook. High-ranked
+    pages can be inspected for freshness, relevance, visibility, and
+    content-quality opportunities.
+  </p>
+
+  <ul>
+    <li><strong>review_refresh:</strong> inspect freshness and content quality.</li>
+    <li><strong>review_visibility:</strong> inspect search visibility and alignment.</li>
+    <li><strong>monitor:</strong> retain for monitoring rather than immediate review.</li>
+  </ul>
+
+  <!-- PUBLIC-SAFE RECOMMENDATION TABLE WILL GO HERE -->
+
+  <h2>8. Reproducibility</h2>
+
+  <p>
+    The analysis is implemented in the repository's capstone notebook.
+    The notebook contains the data construction, feature definitions,
+    validation design, baseline calculation, model training, evaluation,
+    leakage checks, and recommendation generation.
+  </p>
+
+  <p>
+    The workflow can be rerun using the documented FlyRank warehouse release,
+    February feature window, March evaluation window, grouped 80/20 split,
+    and fixed random state of 42.
+  </p>
+
+  <h2>9. Acknowledgments & Data Credit</h2>
+
+  <p>
+    Built on the
+    <a href="https://flyrank.ai" target="_blank" rel="noopener">
+      FlyRank ML Internship dataset
+    </a>.
+  </p>
+
+</body>
+</html>
